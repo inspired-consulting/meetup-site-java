@@ -29,13 +29,24 @@ const formatDate = dateStr =>
         weekday: 'long', month: 'long', day: 'numeric'
     });
 
-const renderCard = ({ date, time, title, speaker }) => `
-    <article class="meetup-card">
-        <time datetime="${date}">${formatDate(date)}</time>
-        <p>${time}</p>
-        <h3>${title}</h3>
-        <p>${speaker}</p>
-    </article>`;
+const el = (tag, props = {}, ...children) => {
+    const node = Object.assign(document.createElement(tag), props);
+    node.append(...children);
+    return node;
+};
+
+const frag = (...children) => {
+    const fragment = document.createDocumentFragment();
+    fragment.append(...children);
+    return fragment;
+};
+
+const renderCard = ({ date, time, title, speaker }) =>
+    el('article', { className: 'meetup-card' },
+        el('time', { dateTime: date, textContent: formatDate(date) }),
+        el('p', { textContent: time }),
+        el('h3', { textContent: title }),
+        el('p', { textContent: speaker }));
 
 const groupByYear = events =>
     events.reduce((groups, event) => {
@@ -44,12 +55,12 @@ const groupByYear = events =>
     }, {});
 
 const renderYearGroups = events =>
-    Object.entries(groupByYear(events))
+    frag(...Object.entries(groupByYear(events))
         .sort(([a], [b]) => b - a)
-        .map(([year, group]) => `
-            <h3>${year}</h3>
-            <div class="meetup-grid">${group.map(renderCard).join('')}</div>
-        `).join('');
+        .flatMap(([year, group]) => [
+            el('h3', { textContent: year }),
+            el('div', { className: 'meetup-grid' }, ...group.map(renderCard)),
+        ]));
 
 const renderEventListSchema = upcoming => {
     if (!upcoming.length) return;
@@ -85,15 +96,14 @@ fetch('data/events.csv')
         const upcoming = events.filter(e => e.date >= today);
         const past     = events.filter(e => e.date <  today).toReversed();
 
-        document.getElementById('upcoming-container').innerHTML =
-            upcoming.length ? renderYearGroups(upcoming) : '<p>No upcoming events.</p>';
+        document.getElementById('upcoming-container').replaceChildren(
+            upcoming.length ? renderYearGroups(upcoming) : el('p', { textContent: 'No upcoming events.' }));
 
-        document.getElementById('past-container').innerHTML =
-            renderYearGroups(past);
+        document.getElementById('past-container').replaceChildren(renderYearGroups(past));
 
         renderEventListSchema(upcoming);
     })
     .catch(error => {
         console.error('Could not load events:', error);
-        document.getElementById('upcoming-container').innerHTML = '<p>Could not load events.</p>';
+        document.getElementById('upcoming-container').replaceChildren(el('p', { textContent: 'Could not load events.' }));
     });
