@@ -1,12 +1,26 @@
 
-const events = [
-    { date: '2025-08-18', time: '18:00–20:00', title: 'What\'s in it for me? Java from version 8 to 21.', speaker: 'Christian Baer' },
-    { date: '2025-11-20', time: '18:00–20:00', title: 'Insights into JUnit', speaker: 'Christian Stein' },
-    { date: '2026-02-19', time: '18:00–20:00', title: 'All you need about Maven 4', speaker: 'Matthias Bünger' },
-    { date: '2026-05-28', time: '18:00–20:00', title: 'Scala Type System', speaker: 'Michael Bauer' },
-    { date: '2026-08-20', time: '18:00–20:00', title: 'Java Meetup Cologne 26/03', speaker: 'TBA' },
-    { date: '2026-11-19', time: '18:00–20:00', title: 'Java Meetup Cologne 26/04', speaker: 'TBA' },
-];
+const parseCSVLine = line => {
+    const values = [];
+    let current = '';
+    let inQuotes = false;
+    for (let i = 0; i < line.length; i++) {
+        const char = line[i];
+        if (inQuotes) {
+            if (char === '"' && line[i + 1] === '"') { current += '"'; i++; }
+            else if (char === '"') inQuotes = false;
+            else current += char;
+        } else if (char === '"') inQuotes = true;
+        else if (char === ',') { values.push(current.trim()); current = ''; }
+        else current += char;
+    }
+    values.push(current.trim());
+    return values;
+};
+
+const parseCSV = text => {
+    const [header, ...lines] = text.trim().split(/\r?\n/).map(parseCSVLine);
+    return lines.map(line => Object.fromEntries(header.map((key, i) => [key, line[i]])));
+};
 
 const today = new Date().toISOString().split('T')[0];
 
@@ -37,11 +51,49 @@ const renderYearGroups = events =>
             <div class="meetup-grid">${group.map(renderCard).join('')}</div>
         `).join('');
 
-const upcoming = events.filter(e => e.date >= today);
-const past     = events.filter(e => e.date <  today).toReversed();
+const renderEventListSchema = upcoming => {
+    if (!upcoming.length) return;
+    const schema = {
+        '@context': 'https://schema.org',
+        '@type': 'ItemList',
+        itemListElement: upcoming.map((e, i) => ({
+            '@type': 'ListItem',
+            position: i + 1,
+            item: {
+                '@type': 'Event',
+                name: e.title,
+                startDate: `${e.date}T${e.time.split('–')[0]}`,
+                endDate:   `${e.date}T${e.time.split('–')[1]}`,
+                eventStatus: 'https://schema.org/EventScheduled',
+                organizer: { '@type': 'Organization', name: 'JUG Colonia' },
+                ...(e.speaker && e.speaker.toLowerCase() !== 'tba'
+                    ? { performer: { '@type': 'Person', name: e.speaker } }
+                    : {}),
+            },
+        })),
+    };
+    const script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.textContent = JSON.stringify(schema);
+    document.head.appendChild(script);
+};
 
-document.getElementById('upcoming-container').innerHTML =
-    upcoming.length ? renderYearGroups(upcoming) : '<p>No upcoming events.</p>';
+fetch('data/events.csv')
+    .then(response => response.text())
+    .then(parseCSV)
+    .then(events => {
+        const upcoming = events.filter(e => e.date >= today);
+        const past     = events.filter(e => e.date <  today).toReversed();
 
-document.getElementById('past-container').innerHTML =
-    renderYearGroups(past);
+        document.getElementById('upcoming-container').innerHTML =
+            upcoming.length ? renderYearGroups(upcoming) : '<p>No upcoming events.</p>';
+
+        document.getElementById('past-container').innerHTML =
+            renderYearGroups(past);
+
+        renderEventListSchema(upcoming);
+    })
+    .catch(error => {
+        console.error('Could not load events:', error);
+        document.getElementById('upcoming-container').innerHTML = '<p>Could not load events.</p>';
+    });
