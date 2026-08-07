@@ -155,6 +155,8 @@ main {
 section {
     margin-bottom: var(--space-xl);
 
+    &#past { margin-bottom: 0; }
+
     h2 {
         font-size: var(--font-size-xl);
         font-weight: 400;
@@ -218,11 +220,10 @@ section {
 
 /* Footer */
 footer {
-    padding: var(--space-md) 0 clamp(var(--space-md), 4vw, var(--space-lg));
-    border-top: var(--thickness-1) solid rgb(0 0 0 / 0.1);
+    padding: clamp(var(--space-lg), 8vw, var(--space-xl)) clamp(var(--space-sm), 4vw, var(--space-md));
 
     h3 {
-        font-size: clamp(var(--font-size-sm), 2vw, var(--font-size-lg));
+        font-size: clamp(var(--font-size-sm), 3vw, var(--font-size-lg));
         font-weight: 900;
         text-transform: uppercase;
         letter-spacing: -0.03em;
@@ -231,7 +232,7 @@ footer {
 
     p {
         margin: 0 0 var(--space-sm) 0;
-        font-size: clamp(var(--font-size-xs), 1.5vw, var(--font-size-sm));
+        font-size: var(--font-size-sm);
         color: var(--color-ink);
     }
 
@@ -248,7 +249,7 @@ footer {
     a {
         color: var(--brand-java-blue-dark);
         text-decoration: none;
-        font-size: clamp(var(--font-size-xs), 1.5vw, var(--font-size-sm));
+        font-size: var(--font-size-sm);
         word-break: break-all;
 
         &:hover { color: var(--color-ink); text-decoration: underline; }
