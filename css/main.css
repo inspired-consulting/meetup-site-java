@@ -33,7 +33,7 @@
     --font-size-xs: 1.4rem;
     --font-size-sm: 1.8rem;
     --font-size-lg: 2.4rem;
-    --font-size-xl: 4rem;
+    --font-size-xl: 3.2rem;
 }
 
 *, *::before, *::after {
@@ -223,8 +223,8 @@ footer {
     padding: clamp(var(--space-lg), 8vw, var(--space-xl)) clamp(var(--space-sm), 4vw, var(--space-md));
 
     h3 {
-        font-size: clamp(var(--font-size-sm), 3vw, var(--font-size-lg));
-        font-weight: 900;
+        font-size: clamp(var(--font-size-lg), 3vw, var(--font-size-xl));
+        font-weight: 600;
         text-transform: uppercase;
         letter-spacing: -0.03em;
         margin: 0 0 var(--space-xs) 0;
