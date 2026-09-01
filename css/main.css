@@ -218,6 +218,60 @@ section {
     }
 }
 
+/* Legal pages (Impressum, etc.) */
+.legal {
+    margin-bottom: var(--space-xl);
+    max-width: 80rem;
+
+    h1 {
+        font-size: var(--font-size-xl);
+        font-weight: 400;
+        text-transform: uppercase;
+        letter-spacing: -0.03em;
+        line-height: 1;
+        margin: 0 0 var(--space-lg) 0;
+        border-bottom: 0.4rem solid var(--color-ink);
+        padding-bottom: var(--space-md);
+
+        @media (max-width: 48rem) { font-size: var(--font-size-lg); }
+    }
+
+    h2 {
+        font-size: var(--font-size-lg);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: -0.03em;
+        line-height: 1.1;
+        margin: var(--space-lg) 0 var(--space-sm) 0;
+    }
+
+    p {
+        margin: 0 0 var(--space-sm) 0;
+        font-size: var(--font-size-sm);
+        color: var(--color-ink);
+    }
+
+    address {
+        font-style: normal;
+        margin: 0 0 var(--space-sm) 0;
+        font-size: var(--font-size-sm);
+    }
+
+    a {
+        color: var(--brand-java-blue-dark);
+        text-decoration: none;
+        word-break: break-word;
+
+        &:hover { color: var(--color-ink); text-decoration: underline; }
+
+        &:focus-visible {
+            outline: var(--thickness-4) solid var(--brand-java-orange);
+            outline-offset: var(--space-xs);
+            border-radius: var(--space-xs);
+        }
+    }
+}
+
 /* Footer */
 footer {
     padding: clamp(var(--space-lg), 8vw, var(--space-xl)) clamp(var(--space-sm), 4vw, var(--space-md));
@@ -262,6 +316,18 @@ footer {
 
         @media (prefers-reduced-motion: no-preference) {
             transition: color 0.15s ease;
+        }
+    }
+
+    .footer-legal {
+        text-align: right;
+        margin-top: var(--space-md);
+        margin-bottom: 0;
+
+        a {
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: -0.03em;
         }
     }
 }
