@@ -254,6 +254,32 @@ section {
     }
 }
 
+.btn-register {
+    display: inline-block;
+    align-self: flex-end;
+    margin-top: auto;
+    padding: var(--space-xs) var(--space-sm);
+    background: var(--brand-java-blue-dark);
+    color: var(--color-sheet);
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: -0.03em;
+    text-decoration: none;
+    border-radius: 0.4rem;
+
+    &:hover { background: var(--brand-java-orange); color: var(--color-ink-deep); }
+
+    &:focus-visible {
+        outline: var(--thickness-4) solid var(--brand-java-blue-dark);
+        outline-offset: var(--space-xs);
+        border-radius: 0.4rem;
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+        transition: background-color 0.15s ease, color 0.15s ease;
+    }
+}
+
 /* Legal pages (Impressum, etc.) */
 .legal {
     margin-bottom: var(--space-xl);
