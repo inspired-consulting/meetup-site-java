@@ -41,12 +41,21 @@ const frag = (...children) => {
     return fragment;
 };
 
-const renderCard = ({ date, time, title, speaker }) =>
+const LUMA_URL = 'https://luma.com/java-meetup-cologne';
+
+const renderCard = ({ date, time, title, speaker }, { showRegister = false } = {}) =>
     el('article', { className: 'meetup-card' },
         el('time', { dateTime: date, textContent: formatDate(date) }),
         el('p', { textContent: time }),
         el('h3', { textContent: title }),
-        el('p', { textContent: speaker }));
+        el('p', { textContent: speaker }),
+        ...(showRegister ? [el('a', {
+            className: 'btn-register',
+            href: LUMA_URL,
+            target: '_blank',
+            rel: 'noopener',
+            textContent: 'Register',
+        })] : []));
 
 const groupByYear = events =>
     events.reduce((groups, event) => {
@@ -54,12 +63,12 @@ const groupByYear = events =>
         return { ...groups, [year]: [...(groups[year] ?? []), event] };
     }, {});
 
-const renderYearGroups = events =>
+const renderYearGroups = (events, cardOptions = {}) =>
     frag(...Object.entries(groupByYear(events))
         .sort(([a], [b]) => b - a)
         .flatMap(([year, group]) => [
             el('h3', { textContent: year }),
-            el('div', { className: 'meetup-grid' }, ...group.map(renderCard)),
+            el('div', { className: 'meetup-grid' }, ...group.map(event => renderCard(event, cardOptions))),
         ]));
 
 const renderEventListSchema = upcoming => {
@@ -97,7 +106,7 @@ fetch('data/events.csv')
         const past     = events.filter(e => e.date <  today).toReversed();
 
         document.getElementById('upcoming-container').replaceChildren(
-            upcoming.length ? renderYearGroups(upcoming) : el('p', { textContent: 'No upcoming events.' }));
+            upcoming.length ? renderYearGroups(upcoming, { showRegister: true }) : el('p', { textContent: 'No upcoming events.' }));
 
         document.getElementById('past-container').replaceChildren(renderYearGroups(past));
 
