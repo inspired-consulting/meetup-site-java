@@ -18,7 +18,6 @@ const renderEvent = (event, abstract, { isNext }) => {
         el('time', { dateTime: date, textContent: formatDate(date, { withYear: true }) }),
         el('p', { className: 'event-time', textContent: time }),
         el('h1', { textContent: title }),
-        el('p', { className: 'event-speaker', textContent: speaker }),
         abstract
             ? el('div', { className: 'event-abstract' }, renderMarkdown(abstract))
             : el('p', { className: 'event-abstract event-abstract--empty', textContent: 'Abstract coming soon.' }),

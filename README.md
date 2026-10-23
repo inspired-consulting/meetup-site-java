@@ -8,7 +8,7 @@ Each event gets its own detail page at `event.html?date=YYYY-MM-DD`, so the date
 
 ## Editing abstracts
 
-An event's abstract goes in `data/abstracts/YYYY-MM-DD.md`, named after the event's date, e.g. `data/abstracts/2026-08-20.md`. Without a file, the detail page shows "Abstract coming soon." Supported Markdown: paragraphs separated by a blank line, list items starting with `-`, `**bold**`, `*italic*` and `[links](https://…)`. The first paragraph is also used as the page description for search engines.
+An event's abstract goes in `data/abstracts/YYYY-MM-DD.md`, named after the event's date, e.g. `data/abstracts/2026-08-20.md`. Without a file, the detail page shows "Abstract coming soon." Supported Markdown: paragraphs separated by a blank line, a line break within a paragraph by ending the line with `\`, list items starting with `-`, `**bold**`, `*italic*` or `_italic_` (use `_italic_` inside bold: `**bold with _italic_**`) and `[links](https://…)`. The first paragraph is also used as the page description for search engines.
 
 ## Local testing
 
