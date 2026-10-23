@@ -1,61 +1,16 @@
+import {
+    today, formatDate, el, frag, eventUrl, renderRegisterButton, nextEvent, loadEvents, eventSchema, appendSchema,
+} from './events.js';
 
-const parseCSVLine = line => {
-    const values = [];
-    let current = '';
-    let inQuotes = false;
-    for (let i = 0; i < line.length; i++) {
-        const char = line[i];
-        if (inQuotes) {
-            if (char === '"' && line[i + 1] === '"') { current += '"'; i++; }
-            else if (char === '"') inQuotes = false;
-            else current += char;
-        } else if (char === '"') inQuotes = true;
-        else if (char === ',') { values.push(current.trim()); current = ''; }
-        else current += char;
-    }
-    values.push(current.trim());
-    return values;
-};
-
-const parseCSV = text => {
-    const [header, ...lines] = text.trim().split(/\r?\n/).map(parseCSVLine);
-    return lines.map(line => Object.fromEntries(header.map((key, i) => [key, line[i]])));
-};
-
-const today = new Date().toISOString().split('T')[0];
-
-const formatDate = dateStr =>
-    new Date(`${dateStr}T00:00:00`).toLocaleDateString('en-US', {
-        weekday: 'long', month: 'long', day: 'numeric'
-    });
-
-const el = (tag, props = {}, ...children) => {
-    const node = Object.assign(document.createElement(tag), props);
-    node.append(...children);
-    return node;
-};
-
-const frag = (...children) => {
-    const fragment = document.createDocumentFragment();
-    fragment.append(...children);
-    return fragment;
-};
-
-const LUMA_URL = 'https://luma.com/java-meetup-cologne';
-
-const renderCard = ({ date, time, title, speaker }, { showRegister = false } = {}) =>
-    el('article', { className: 'meetup-card' },
+const renderCard = (event, { isNext = false } = {}) => {
+    const { date, time, title, speaker } = event;
+    return el('article', { className: 'meetup-card' },
         el('time', { dateTime: date, textContent: formatDate(date) }),
         el('p', { textContent: time }),
-        el('h3', { textContent: title }),
+        el('h3', {}, el('a', { href: eventUrl(event), textContent: title })),
         el('p', { textContent: speaker }),
-        ...(showRegister ? [el('a', {
-            className: 'btn-register',
-            href: LUMA_URL,
-            target: '_blank',
-            rel: 'noopener',
-            textContent: 'Register',
-        })] : []));
+        ...(isNext ? [renderRegisterButton()] : []));
+};
 
 const groupByYear = events =>
     events.reduce((groups, event) => {
@@ -63,50 +18,33 @@ const groupByYear = events =>
         return { ...groups, [year]: [...(groups[year] ?? []), event] };
     }, {});
 
-const renderYearGroups = (events, cardOptions = {}) =>
+const renderYearGroups = (events, next) =>
     frag(...Object.entries(groupByYear(events))
         .sort(([a], [b]) => b - a)
         .flatMap(([year, group]) => [
             el('h3', { textContent: year }),
-            el('div', { className: 'meetup-grid' }, ...group.map(event => renderCard(event, cardOptions))),
+            el('div', { className: 'meetup-grid' }, ...group.map(event => renderCard(event, { isNext: event === next }))),
         ]));
 
 const renderEventListSchema = upcoming => {
     if (!upcoming.length) return;
-    const schema = {
-        '@context': 'https://schema.org',
+    appendSchema({
         '@type': 'ItemList',
         itemListElement: upcoming.map((e, i) => ({
             '@type': 'ListItem',
             position: i + 1,
-            item: {
-                '@type': 'Event',
-                name: e.title,
-                startDate: `${e.date}T${e.time.split('–')[0]}`,
-                endDate:   `${e.date}T${e.time.split('–')[1]}`,
-                eventStatus: 'https://schema.org/EventScheduled',
-                organizer: { '@type': 'Organization', name: 'JUG Colonia' },
-                ...(e.speaker && e.speaker.toLowerCase() !== 'tba'
-                    ? { performer: { '@type': 'Person', name: e.speaker } }
-                    : {}),
-            },
+            item: { ...eventSchema(e), url: new URL(eventUrl(e), location.href).href },
         })),
-    };
-    const script = document.createElement('script');
-    script.type = 'application/ld+json';
-    script.textContent = JSON.stringify(schema);
-    document.head.appendChild(script);
+    });
 };
 
-fetch('data/events.csv')
-    .then(response => response.text())
-    .then(parseCSV)
+loadEvents()
     .then(events => {
         const upcoming = events.filter(e => e.date >= today);
         const past     = events.filter(e => e.date <  today).toReversed();
 
         document.getElementById('upcoming-container').replaceChildren(
-            upcoming.length ? renderYearGroups(upcoming, { showRegister: true }) : el('p', { textContent: 'No upcoming events.' }));
+            upcoming.length ? renderYearGroups(upcoming, nextEvent(events)) : el('p', { textContent: 'No upcoming events.' }));
 
         document.getElementById('past-container').replaceChildren(renderYearGroups(past));
 
