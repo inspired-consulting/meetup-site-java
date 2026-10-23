@@ -186,6 +186,7 @@ nav {
 /* Main Content */
 main {
     padding: clamp(var(--space-lg), 8vw, var(--space-xl)) clamp(var(--space-sm), 4vw, var(--space-md));
+
 }
 
 section {
@@ -299,8 +300,9 @@ section {
 /* Event detail page */
 .back-link {
     display: inline-block;
-    margin-bottom: var(--space-md);
+    margin-bottom: clamp(var(--space-md), 8vw, var(--space-lg));
     color: var(--brand-java-blue-dark);
+    font-size: var(--font-size-lg);
     font-weight: 700;
     text-transform: uppercase;
     text-decoration: none;
@@ -319,7 +321,6 @@ section {
     flex-direction: column;
     gap: var(--space-sm);
     max-width: 80rem;
-    margin-bottom: var(--space-xl);
 
     time {
         font-weight: 900;
@@ -330,13 +331,11 @@ section {
     }
 
     h1 {
-        font-size: var(--font-size-xl);
+        font-size: var(--font-size-lg);
         font-weight: 900;
         line-height: 1.1;
         letter-spacing: -0.03em;
         margin: 0;
-        border-bottom: 0.4rem solid var(--color-ink);
-        padding-bottom: var(--space-md);
 
         @media (max-width: 48rem) { font-size: var(--font-size-lg); }
     }
