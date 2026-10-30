@@ -1,5 +1,5 @@
 import {
-    formatDate, el, eventUrl, renderRegisterButton, nextEvent, loadEvents, loadAbstract, eventSchema, appendSchema,
+    formatDate, el, eventUrl, venueLabel, renderRegisterButton, nextEvent, loadEvents, loadAbstract, eventSchema, appendSchema,
 } from './events.js';
 import { renderMarkdown, markdownSummary } from './markdown.js';
 
@@ -17,6 +17,8 @@ const renderEvent = (event, abstract, { isNext }) => {
     container.replaceChildren(
         el('time', { dateTime: date, textContent: formatDate(date, { withYear: true }) }),
         el('p', { className: 'event-time', textContent: time }),
+        el('p', { className: 'event-location' },
+            `${venueLabel} · `, el('a', { href: './#location', textContent: 'Details' })),
         el('h1', { textContent: title }),
         abstract
             ? el('div', { className: 'event-abstract' }, renderMarkdown(abstract))

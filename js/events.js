@@ -42,6 +42,10 @@ export const frag = (...children) => {
 
 const LUMA_URL = 'https://luma.com/java-meetup-cologne';
 
+export const VENUE = { street: 'Buttermarkt 24', postalCode: '50667', city: 'Cologne' };
+
+export const venueLabel = `${VENUE.street}, ${VENUE.postalCode} ${VENUE.city} & online via Zoom`;
+
 export const eventUrl = ({ date }) => `event.html?date=${encodeURIComponent(date)}`;
 
 export const renderRegisterButton = () =>
@@ -77,6 +81,21 @@ export const eventSchema = (e, description) => ({
     startDate: `${e.date}T${e.time.split('–')[0]}`,
     endDate:   `${e.date}T${e.time.split('–')[1]}`,
     eventStatus: 'https://schema.org/EventScheduled',
+    eventAttendanceMode: 'https://schema.org/MixedEventAttendanceMode',
+    location: [
+        {
+            '@type': 'Place',
+            name: `${VENUE.street}, ${VENUE.city}`,
+            address: {
+                '@type': 'PostalAddress',
+                streetAddress: VENUE.street,
+                postalCode: VENUE.postalCode,
+                addressLocality: VENUE.city,
+                addressCountry: 'DE',
+            },
+        },
+        { '@type': 'VirtualLocation', url: LUMA_URL },
+    ],
     organizer: { '@type': 'Organization', name: 'JUG Colonia' },
     ...(description ? { description } : {}),
     ...(e.speaker && e.speaker.toLowerCase() !== 'tba'
