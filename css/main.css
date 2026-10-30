@@ -72,6 +72,10 @@
     --font-size-xl: 3.2rem;
 }
 
+@media (prefers-reduced-motion: no-preference) {
+    html { scroll-behavior: smooth; }
+}
+
 *, *::before, *::after {
     box-sizing: inherit;
 }
@@ -516,6 +520,35 @@ section {
             outline-offset: var(--space-xs);
             border-radius: var(--space-xs);
         }
+    }
+}
+
+/* Back-to-top link, shown by js/to-top.js once the header is out of view */
+.to-top {
+    position: fixed;
+    right: clamp(var(--space-md), 6vw, var(--space-lg));
+    bottom: clamp(var(--space-md), 6vw, var(--space-lg));
+    display: flex;
+    padding: var(--space-xs);
+    background: var(--color-sheet);
+    border-radius: 50%;
+    box-shadow: 0 0.2rem 1.2rem rgb(0 0 0 / 0.15);
+    color: var(--brand-java-blue-dark);
+    z-index: 100;
+
+    &[inert] { opacity: 0; pointer-events: none; }
+
+    &:hover { color: var(--brand-java-orange); }
+
+    &:focus-visible {
+        outline: var(--thickness-4) solid var(--brand-java-orange);
+        outline-offset: var(--space-xxs);
+    }
+
+    svg { width: clamp(2.4rem, 3vw, 3.6rem); height: auto; }
+
+    @media (prefers-reduced-motion: no-preference) {
+        transition: opacity 0.2s ease;
     }
 }
 
