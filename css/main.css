@@ -267,13 +267,12 @@ section {
         @container meetup-grid (max-width: 71rem) { font-size: var(--font-size-lg); }
 
         a {
-            color: inherit;
+            color: var(--brand-java-blue-dark);
             text-decoration: underline;
-            text-decoration-color: var(--brand-java-orange);
             text-decoration-thickness: var(--thickness-2);
             text-underline-offset: var(--thickness-4);
 
-            &:hover { color: var(--brand-java-blue-dark); }
+            &:hover { color: var(--brand-java-orange); }
 
             &:focus-visible {
                 outline: var(--thickness-4) solid var(--brand-java-orange);
